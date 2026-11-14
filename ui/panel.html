@@ -7,17 +7,29 @@
 .fwc-choose{padding:10px 12px;display:flex;gap:8px;align-items:center;border-bottom:1px solid #353247}.fwc-choose select{background:#2b293b;color:#fff;border:1px solid #6b647f;border-radius:8px;min-width:0;flex:1;padding:7px}.fwc-choose button{background:#383349;border:1px solid #6b647f;border-radius:8px;color:#fff;padding:7px 10px}
 #fwc-info{padding:4px 12px;color:#bcb2d4;font-size:12px;min-height:23px;white-space:normal}#fwc-log{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:9px}
 .fwc-msg{padding:9px 11px;border-radius:12px;max-width:90%;white-space:pre-wrap;overflow-wrap:anywhere}.fwc-msg.user{align-self:flex-end;background:#504281}.fwc-msg.ai{align-self:flex-start;background:#302e40}.fwc-msg.notice{align-self:center;background:#292638;color:#c9c1d8;font-size:12px}
+#fwc-clear{background:#4e2d38;border:1px solid #9e536b;color:#fce5e9;padding:7px 10px;border-radius:8px;white-space:nowrap}
+#fwc-clear:disabled{opacity:.48}
+.fwc-msg{position:relative;padding-right:27px}
+.fwc-delete-msg{position:absolute;right:3px;top:3px;background:transparent;color:#aaa3bc;border:0;border-radius:50%;width:23px;height:23px;line-height:23px;font-size:17px;cursor:pointer;opacity:.7}
+.fwc-delete-msg:hover,.fwc-delete-msg:focus{opacity:1;color:#ffb0b0}
+#fwc-confirm{position:absolute;inset:0;background:#0009;z-index:4;display:flex;align-items:center;justify-content:center;padding:22px}
+#fwc-confirm[hidden]{display:none}
+.fwc-confirm-card{background:#292539;border:1px solid #777090;border-radius:13px;padding:18px;max-width:320px;width:100%;box-shadow:0 8px 26px #0008}
+.fwc-confirm-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:16px}
+.fwc-confirm-actions button{padding:8px 12px;border-radius:7px;border:1px solid #6e6680;background:#393449;color:white}
+#fwc-confirm-yes{background:#a33a54;border-color:#a33a54}
 #fwc-form{display:flex;gap:8px;padding:10px;border-top:1px solid #353247}#fwc-input{color:#fff;background:#292639;border:1px solid #6b647f;border-radius:9px;resize:none;padding:8px;flex:1;min-width:0}#fwc-send{border:0;border-radius:9px;background:#7c6ae4;color:white;padding:8px 14px}.fwc-tip{padding:3px 10px 9px;color:#8f88a6;font-size:11px}
 </style>
 <div id="fourthwall-chat-root">
 <button type="button" id="fwc-launch" data-i18n-aria="ui.open" aria-label="打开第四面墙">✦</button>
 <div id="fwc-box" hidden role="dialog" aria-label="第四面墙">
 <header class="fwc-top"><b data-i18n="ui.title">✦ 第四面墙 · 角色直聊</b><button id="fwc-close" data-i18n-aria="ui.close" aria-label="关闭">×</button></header>
-<div class="fwc-choose"><span data-i18n="ui.actor">人物</span><select id="fwc-actor"></select><button id="fwc-sync" data-i18n="ui.sync">同步剧情</button></div>
+<div class="fwc-choose"><span data-i18n="ui.actor">人物</span><select id="fwc-actor"></select><button id="fwc-sync" data-i18n="ui.sync">同步剧情</button><button id="fwc-clear" data-i18n="ui.clear" data-i18n-aria="ui.clearTitle" aria-label="清空当前角色直聊" type="button">清空</button></div>
 <div id="fwc-info" data-i18n="ui.info">读取当前聊天的 AI 回复与长期记忆</div>
 <div id="fwc-log"></div>
 <form id="fwc-form"><textarea id="fwc-input" rows="2" maxlength="5000" data-i18n-placeholder="ui.placeholder" placeholder="直接对选中人物说话……"></textarea><button id="fwc-send" data-i18n="ui.send">发送</button></form>
-<div class="fwc-tip" data-i18n="ui.tip">独立直聊 · 不修改主线消息 · 自动检索聊天历史</div>
+<div class="fwc-tip" data-i18n="ui.tip">故事外的你 ≠ 主线 Raymond · 删除仅影响会客厅</div>
+<div id="fwc-confirm" hidden><div class="fwc-confirm-card"><div id="fwc-confirm-text"></div><div class="fwc-confirm-actions"><button id="fwc-confirm-no" type="button" data-i18n="ui.cancel">取消</button><button id="fwc-confirm-yes" type="button" data-i18n="ui.confirmDelete">删除</button></div></div></div>
 </div>
 </div>
 <script src="/plugins/dev.yxu9949-design.fourthwall-room/ui/panel.js"></script>
