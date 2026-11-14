@@ -1,0 +1,23 @@
+<style>
+#fourthwall-chat-root{font:14px/1.5 system-ui,-apple-system,sans-serif;color:var(--theme-text,#eee)}
+#fwc-launch{position:fixed;right:13px;bottom:100px;z-index:960;border:0;background:#7c6ae4;color:#fff;border-radius:50%;width:48px;height:48px;font-size:23px;box-shadow:0 5px 18px #0007;cursor:pointer}
+#fwc-box{position:fixed;z-index:961;right:10px;bottom:88px;width:min(430px,calc(100vw - 20px));height:min(650px,calc(100dvh - 110px));background:#171724;color:#f1edf9;border:1px solid #69617f;border-radius:16px;box-shadow:0 12px 40px #0009;display:flex;flex-direction:column;overflow:hidden}
+#fwc-box[hidden]{display:none}#fwc-box button,#fwc-box select,#fwc-box textarea{font:inherit}#fwc-box button{cursor:pointer}
+.fwc-top{padding:12px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #353247}.fwc-top b{flex:1;font-size:16px}.fwc-top button{background:transparent;color:inherit;border:0;font-size:22px}
+.fwc-choose{padding:10px 12px;display:flex;gap:8px;align-items:center;border-bottom:1px solid #353247}.fwc-choose select{background:#2b293b;color:#fff;border:1px solid #6b647f;border-radius:8px;min-width:0;flex:1;padding:7px}.fwc-choose button{background:#383349;border:1px solid #6b647f;border-radius:8px;color:#fff;padding:7px 10px}
+#fwc-info{padding:4px 12px;color:#bcb2d4;font-size:12px;min-height:23px;white-space:normal}#fwc-log{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:9px}
+.fwc-msg{padding:9px 11px;border-radius:12px;max-width:90%;white-space:pre-wrap;overflow-wrap:anywhere}.fwc-msg.user{align-self:flex-end;background:#504281}.fwc-msg.ai{align-self:flex-start;background:#302e40}.fwc-msg.notice{align-self:center;background:#292638;color:#c9c1d8;font-size:12px}
+#fwc-form{display:flex;gap:8px;padding:10px;border-top:1px solid #353247}#fwc-input{color:#fff;background:#292639;border:1px solid #6b647f;border-radius:9px;resize:none;padding:8px;flex:1;min-width:0}#fwc-send{border:0;border-radius:9px;background:#7c6ae4;color:white;padding:8px 14px}.fwc-tip{padding:3px 10px 9px;color:#8f88a6;font-size:11px}
+</style>
+<div id="fourthwall-chat-root">
+<button type="button" id="fwc-launch" aria-label="打开第四面墙">✦</button>
+<div id="fwc-box" hidden role="dialog" aria-label="第四面墙">
+<header class="fwc-top"><b>✦ 第四面墙 · 角色直聊</b><button id="fwc-close" aria-label="关闭">×</button></header>
+<div class="fwc-choose"><span>人物</span><select id="fwc-actor"></select><button id="fwc-sync">同步剧情</button></div>
+<div id="fwc-info">读取当前聊天的 AI 回复与长期记忆</div>
+<div id="fwc-log"></div>
+<form id="fwc-form"><textarea id="fwc-input" rows="2" maxlength="5000" placeholder="直接对选中人物说话……"></textarea><button id="fwc-send">发送</button></form>
+<div class="fwc-tip">独立直聊 · 不修改主线消息 · 自动检索聊天历史</div>
+</div>
+</div>
+<script src="/plugins/dev.yxu9949-design.fourthwall-room/ui/panel.js"></script>
