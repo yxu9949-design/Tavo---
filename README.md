@@ -1,37 +1,41 @@
-# Tavo 第四面墙 · 角色直聊（v1.1.0）
+# Tavo 第四面墙 · 角色直聊（v1.1.1）
 
-> 非官方 Tavo 社区插件，尚未在真实 Tavo App 中完成安装联调。建议先备份聊天。
+> 非官方 Tavo 社区插件；已检查 manifest 必填字段和安装包结构，尚未在真实 Tavo App 中完成端侧测试。请先备份聊天。
 
-## 核心功能
+## 功能
 
-- **直接读取 Tavo 聊天**：通过 `tavo.message.find([], { role: 'assistant' })` 读取当前会话已保存的 AI 回复，**无需手动导入聊天文件**。
-- **读取长期记忆**：读取当前聊天 `tavo.memory.current()`，以及存在时的 `_memories` 归档向量。
-- **一扇直聊窗口**：自动从角色卡、多人卡名称、章节 `NAME:` 识别人物；从**下拉菜单**手动选择发言角色，而不是打开多个窗口或标签。
-- **第四面墙预设重写**：角色可以在当前世界之外直接讨论共同经历，保持原有性格与关系，不将每个问题当成小说续写。
-- **上下文正则清理**：读取历史后，自动剔除 `<Think>`、`<novel_header>`、`<Details>`、好感度等格式内容，再提取主线正文；**不修改原始消息或 Tavo 全局正则**。
-- **自动历史检索**：遍历当前聊天已保存 AI 回复，按人物、问题和时间顺序选取相关片段；每次还会附带最近剧情和长记忆。**不会把几十万字历史逐字一次性送给模型**。
-- **主线隔离**：会客厅交谈写入当前聊天私有文件 `fourthwall_direct_v11.json`，不会篡改主线消息。
+- **直接读取当前 Tavo 聊天**：通过 `tavo.message.find([], { role: 'assistant' })` 读取当前会话已经保存的 AI 回复，不必手工导出。
+- **长期记忆读取**：读取 `tavo.memory.current()`，并在可用时读取归档的向量长记忆。
+- **单窗口和手动选择**：从角色卡、角色卡标题和历史章节 NAME 字段尝试识别多个角色，选择其中一位进行第四面墙直聊，不生成多个会客窗口。
+- **独立预设和文本清理**：角色讨论真正发生过的故事，而不是输出下一章；自动剔除思维链、章节头、NOTES 和好感度格式，只清理模型可见的历史摘录，不修改 Tavo 原消息。
+- **不覆盖原聊天**：会客厅交谈保存在当前聊天专用文件 `fourthwall_direct_v11.json`，保留主线完整性。
+
+## v1.1.1 修复
+
+v1.1.0 的 Manifest v2 忘记声明 `localization`，Tavo v1.10 安装时出现“manifest 缺少 localization 声明”。此版补全 `localization.defaultLocale`、`localization.resources`，增加 `locales/en.json`、`locales/zh-CN.json` 和动态 UI 文案切换。
 
 ## 安装
 
-1. 将本仓库打包成 `.tpg`（其本质是 ZIP 包），或下载聊天中附带的安装包。
-2. 在 **Tavo → 更多 → 设置 → 插件 → 导入**，选择 `.tpg` 并启用。
-3. 打开 **高级渲染**，在已有聊天中点击紫色 `✦`。
-4. 选择人物后直接聊天。主线新增消息后可按「同步剧情」重新读取。
+1. 下载 [v1.1.1 安装包](dist/tavo-fourthwall-v1.1.1.tpg)。
+2. Tavo → 设置 → 插件 → 安装 → 导入此 `.tpg` 文件并启用。
+3. 开启 **高级渲染**，进入已有聊天，点击紫色 `✦`。
+4. 选择人物，点击 **同步剧情** 后询问她/他已经发生的主线经历。
 
-## 项目文件
+## 源码结构
 
-- `manifest.json`：Tavo 插件注册与权限
-- `ui/panel.html`：单窗口界面与 CSS
-- `ui/panel.js`：角色识别、Tavo 消息与记忆读取、检索、专用直聊提示词、文本清理正则
-- `scripts/build.py`：构建 `.tpg` 包
+```text
+manifest.json
+locales/en.json
+locales/zh-CN.json
+ui/panel.html
+ui/panel.js
+scripts/build.py
+```
 
-## 隐私和限制
+## 限制与隐私
 
-只有在你点击发送时，才会使用当前 Tavo 配置的模型 API，发送必要的角色设定、经过筛选的 AI 回复、长期记忆和提问。未内置外部服务器或遥测。插件具有读取聊天和记忆的权限，请只安装你信任的版本。
+此插件读取当前聊天中的人物卡、AI 回复和可访问的记忆。每次直聊生成会把部分精选内容交给你当前绑定的模型 API；它不额外运行第三方遥测服务器。自动检测角色名使用启发式规则，可能需要将来增强。**尚未经过真实 Tavo 端侧安装与运行验证**，安装失败或功能异常请提交 Issue。
 
-识别结果取决于卡片和历史格式，可能遗漏不规范的角色名。本项目还**未经真实 Tavo 端侧验证**。
+官方参考：[Tavo 插件开发](https://docs.tavoai.dev/cn/guides/plugin-development/)、[TavoJS API](https://docs.tavoai.dev/cn/guides/javascript-api/)。
 
-官方文档：[插件开发](https://docs.tavoai.dev/cn/guides/plugin-development/) · [JavaScript API](https://docs.tavoai.dev/cn/guides/javascript-api/)
-
-© 社区项目，与 Tavo 官方无隶属关系。暂无明确开源许可证。
+版权所有者：社区贡献者；项目未明确授权开源许可证。
