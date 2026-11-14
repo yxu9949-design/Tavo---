@@ -10,14 +10,14 @@
 #fwc-form{display:flex;gap:8px;padding:10px;border-top:1px solid #353247}#fwc-input{color:#fff;background:#292639;border:1px solid #6b647f;border-radius:9px;resize:none;padding:8px;flex:1;min-width:0}#fwc-send{border:0;border-radius:9px;background:#7c6ae4;color:white;padding:8px 14px}.fwc-tip{padding:3px 10px 9px;color:#8f88a6;font-size:11px}
 </style>
 <div id="fourthwall-chat-root">
-<button type="button" id="fwc-launch" aria-label="打开第四面墙">✦</button>
+<button type="button" id="fwc-launch" data-i18n-aria="ui.open" aria-label="打开第四面墙">✦</button>
 <div id="fwc-box" hidden role="dialog" aria-label="第四面墙">
-<header class="fwc-top"><b>✦ 第四面墙 · 角色直聊</b><button id="fwc-close" aria-label="关闭">×</button></header>
-<div class="fwc-choose"><span>人物</span><select id="fwc-actor"></select><button id="fwc-sync">同步剧情</button></div>
-<div id="fwc-info">读取当前聊天的 AI 回复与长期记忆</div>
+<header class="fwc-top"><b data-i18n="ui.title">✦ 第四面墙 · 角色直聊</b><button id="fwc-close" data-i18n-aria="ui.close" aria-label="关闭">×</button></header>
+<div class="fwc-choose"><span data-i18n="ui.actor">人物</span><select id="fwc-actor"></select><button id="fwc-sync" data-i18n="ui.sync">同步剧情</button></div>
+<div id="fwc-info" data-i18n="ui.info">读取当前聊天的 AI 回复与长期记忆</div>
 <div id="fwc-log"></div>
-<form id="fwc-form"><textarea id="fwc-input" rows="2" maxlength="5000" placeholder="直接对选中人物说话……"></textarea><button id="fwc-send">发送</button></form>
-<div class="fwc-tip">独立直聊 · 不修改主线消息 · 自动检索聊天历史</div>
+<form id="fwc-form"><textarea id="fwc-input" rows="2" maxlength="5000" data-i18n-placeholder="ui.placeholder" placeholder="直接对选中人物说话……"></textarea><button id="fwc-send" data-i18n="ui.send">发送</button></form>
+<div class="fwc-tip" data-i18n="ui.tip">独立直聊 · 不修改主线消息 · 自动检索聊天历史</div>
 </div>
 </div>
 <script src="/plugins/dev.yxu9949-design.fourthwall-room/ui/panel.js"></script>
