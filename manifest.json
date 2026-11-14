@@ -2,15 +2,43 @@
   "specVersion": 2,
   "minAppVersion": "0.93.0",
   "id": "dev.yxu9949-design.fourthwall-room",
-  "name": "第四面墙 · 角色直聊",
-  "version": "1.1.0",
+  "name": {
+    "$t": "plugin.name"
+  },
+  "version": "1.1.1",
   "author": "yxu9949-design",
-  "description": "直接读取当前 Tavo 聊天 AI 回复与长期记忆；单窗口选择多角色，进行独立第四面墙交流。",
-  "permissions": ["chat", "character", "message", "memory", "vector", "generate", "file"],
+  "description": {
+    "$t": "plugin.description"
+  },
+  "permissions": [
+    "chat",
+    "character",
+    "message",
+    "memory",
+    "vector",
+    "generate",
+    "file"
+  ],
   "contributes": {
-    "visible": { "chat": true },
+    "visible": {
+      "chat": true
+    },
     "htmlFragments": [
-      { "id": "fourthwall-chat", "src": "ui/panel.html", "mount": "/chat/body/end" }
+      {
+        "id": "fourthwall-chat",
+        "src": "ui/panel.html",
+        "mount": "/chat/body/end"
+      }
     ]
+  },
+  "releaseNotes": {
+    "$t": "releaseNotes.1_1_1"
+  },
+  "localization": {
+    "defaultLocale": "zh-CN",
+    "resources": {
+      "zh-CN": "locales/zh-CN.json",
+      "en": "locales/en.json"
+    }
   }
 }
