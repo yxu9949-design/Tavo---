@@ -6,6 +6,17 @@
   root.dataset.ready = 'true';
   const $ = id => root.querySelector('#'+id);
   const ui = {open:$('fwc-launch'),box:$('fwc-box'),close:$('fwc-close'),actor:$('fwc-actor'),sync:$('fwc-sync'),info:$('fwc-info'),log:$('fwc-log'),form:$('fwc-form'),input:$('fwc-input'),send:$('fwc-send')};
+  const trans = (key, params) => {
+    try { return tavo.plugin.i18n.t(key, params); }
+    catch (_) { return key; }
+  };
+  function translateStatic() {
+    root.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = trans(el.getAttribute('data-i18n')); });
+    root.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', trans(el.getAttribute('data-i18n-aria'))); });
+    root.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.setAttribute('placeholder', trans(el.getAttribute('data-i18n-placeholder'))); });
+  }
+  translateStatic();
+  try { tavo.plugin.i18n.onChange(() => { translateStatic(); render(); }); } catch (_) {}
   const STORE = 'fourthwall_direct_v11.json';
   const known = [
     ['德克萨斯','Texas','Cellinia Texas','切利尼娜·德克萨斯'],
@@ -37,12 +48,12 @@
     .replace(/\n{3,}/g,'\n\n').trim();}
   function say(cls,text){const el=document.createElement('div');el.className='fwc-msg '+cls;el.textContent=text;ui.log.appendChild(el);ui.log.scrollTop=ui.log.scrollHeight;}
   function active(){return st.people.find(p=>p.name===st.selected);}
-  function render(){ui.log.textContent='';for(const row of (st.threads[st.selected]||[]))say(row.role==='user'?'user':'ai',row.text);if(!ui.log.children.length)say('notice','已进入第四面墙。选择人物后可直接询问她/他对原剧情的看法。');}
+  function render(){ui.log.textContent='';for(const row of (st.threads[st.selected]||[]))say(row.role==='user'?'user':'ai',row.text);if(!ui.log.children.length)say('notice',trans('ui.empty'));}
   function status(text){ui.info.textContent=text;}
   async function save(){try{await tavo.file.save(STORE,JSON.stringify(st.threads),{scope:'chat',encoding:'utf8'});}catch(e){console.warn('[FourthWall] save',e);}}
   async function load(){try{st.threads=JSON.parse(await tavo.file.load(STORE,{scope:'chat',encoding:'utf8'})||'{}');}catch{st.threads={};}}
   async function ingest(){
-    st.chat=await tavo.chat.current();if(!st.chat)throw Error('请先进入一段聊天');
+    st.chat=await tavo.chat.current();if(!st.chat)throw Error(trans('ui.enter'));
     // Read ACTUAL saved Tavo conversation, not exported files or browser DOM.
     // Assistant messages are generated text from current chat, even for a multi-character card.
     const rows=await tavo.message.find([], {role:'assistant'});
@@ -67,7 +78,7 @@
     if(!st.people.some(p=>p.name===st.selected))st.selected=st.people[0]?.name||'';
     ui.actor.textContent='';for(const p of st.people){const o=document.createElement('option');o.value=p.name;o.textContent=p.name;ui.actor.appendChild(o);}
     ui.actor.value=st.selected;
-    status(`已直接读取 ${st.items.length} 条 AI 回复、${st.memory.length} 条记忆 · ${st.people.length} 位人物`);
+    status(trans('ui.read',{count:st.items.length,memory:st.memory.length,cast:st.people.length}));
   }
   function chooseHistory(query){
     const a=active();if(!a)return [];
@@ -99,16 +110,16 @@
 请仅以 ${p.name} 本人的口吻回复，保持连续记忆且只回答现在的问题。`;
   }
   async function send(ev){ev.preventDefault();if(st.busy)return;const content=ui.input.value.trim();if(!content||!active())return;
-    st.busy=true;ui.send.disabled=true;ui.input.disabled=true;say('user',content);ui.input.value='';status('正在调用 Tavo 当前模型……');
+    st.busy=true;ui.send.disabled=true;ui.input.disabled=true;say('user',content);ui.input.value='';status(trans('ui.model'));
     const log=st.threads[st.selected]||(st.threads[st.selected]=[]);log.push({role:'user',text:content});
     try{const resp=await tavo.generate(makePrompt(content),{context:false,settings:{maxCompletionTokens:1100}});
-      const answer=tidy(resp)||String(resp||'').trim()||'（没有收到回复）';log.push({role:'ai',text:answer});say('ai',answer);await save();status(`直接读取 ${st.items.length} 条主线 AI 回复和 ${st.memory.length} 条记忆`);
-    }catch(err){log.pop();say('notice','生成失败：'+(err?.message||err));status('生成失败，可重新发送');}
+      const answer=tidy(resp)||String(resp||'').trim()||trans('ui.noanswer');log.push({role:'ai',text:answer});say('ai',answer);await save();status(trans('ui.ready',{count:st.items.length,memory:st.memory.length}));
+    }catch(err){log.pop();say('notice',trans('ui.genfail',{error:String(err?.message||err)}));status(trans('ui.retry'));}
     finally{st.busy=false;ui.send.disabled=false;ui.input.disabled=false;ui.input.focus();}
   }
   ui.open.onclick=()=>{ui.box.hidden=!ui.box.hidden;if(!ui.box.hidden)ui.input.focus();};ui.close.onclick=()=>ui.box.hidden=true;
   ui.actor.onchange=()=>{st.selected=ui.actor.value;render();};ui.form.addEventListener('submit',send);
   ui.input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ui.form.requestSubmit();}});
-  ui.sync.onclick=async()=>{ui.sync.disabled=true;status('正在读取当前 Tavo 聊天……');try{await ingest();render();}catch(e){status('读取失败：'+e.message);}finally{ui.sync.disabled=false;}};
-  (async()=>{try{await load();await ingest();render();}catch(e){status('初始化失败：'+e.message);console.warn('[FourthWall]',e);}})();
+  ui.sync.onclick=async()=>{ui.sync.disabled=true;status(trans('ui.syncing'));try{await ingest();render();}catch(e){status(trans('ui.loadfail',{error:String(e.message)}));}finally{ui.sync.disabled=false;}};
+  (async()=>{try{await load();await ingest();render();}catch(e){status(trans('ui.initfail',{error:String(e.message)}));console.warn('[FourthWall]',e);}})();
 })();
