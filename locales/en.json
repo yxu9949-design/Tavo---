@@ -1,6 +1,6 @@
 {
   "plugin.name": "Fourth Wall · Direct Character Chat",
-  "plugin.description": "Open an independent fourth-wall conversation inside the current Tavo chat. Reads saved assistant replies and accessible long-term memories, detects characters from card names and chapter headers, and lets you select one in a single chat window. Only relevant snippets and memories are sent to the configured model on each request. Original messages are never edited; separate lounge logs are stored in chat-scoped plugin files. Requires Advanced Rendering. Test in a backup chat first.",
+  "plugin.description": "A nonofficial Fourth Wall direct-chat plugin for single-character and multi-character Tavo cards, across any fiction or setting. Reads accessible assistant replies and long-term memories from the current chat, lets you choose a character in one window, and keeps this out-of-story conversation separate. Supports deleting individual lounge messages or clearing the selected character's lounge history without editing main-story messages or character cards.",
   "releaseNotes.1_1_1": "Fix missing mandatory localization declaration that prevented v1.1.0 installation on Tavo 1.10. Add bilingual resources and localized UI. Preserve native chat reading, single-window selection and memory retrieval.",
   "ui.open": "Open Fourth Wall",
   "ui.title": "✦ Fourth Wall · Direct Chat",
@@ -10,7 +10,7 @@
   "ui.info": "Reading assistant replies and long-term memories from this chat",
   "ui.placeholder": "Talk directly to the selected character…",
   "ui.send": "Send",
-  "ui.tip": "Real player ≠ story avatar · Deletion only affects this lounge",
+  "ui.tip": "Real player ≠ in-story player avatar · Deletion affects only the lounge",
   "ui.empty": "This is outside the story. Select a character and talk about your shared storyline.",
   "ui.read": "Read {count} assistant replies, {memory} memories · {cast} characters",
   "ui.model": "Contacting the current Tavo model…",
@@ -33,5 +33,6 @@
   "ui.cleared": "Cleared your chat with {actor}. Main story and memories remain intact.",
   "ui.deleted": "Deleted the selected Fourth Wall message; main story untouched.",
   "ui.deleteError": "Delete failed: {error}",
-  "ui.noActors": "No actors detected. Check the card title."
+  "ui.noActors": "No actors detected. Check the card title.",
+  "releaseNotes.1_2_1": "Make installation instructions and built-in fourth-wall prompts generic across single- and multi-character cards; remove named-character and setting examples. Preserve native history retrieval, character selection and lounge deletion."
 }
