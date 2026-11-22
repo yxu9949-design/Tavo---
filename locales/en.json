@@ -1,6 +1,6 @@
 {
   "plugin.name": "Fourth Wall · Direct Character Chat",
-  "plugin.description": "Fourth Wall direct chat for single- and multi-character Tavo cards. In one window, select the character whose backstage roleplay partner you want to talk to, reference the current story and memories, manage sessions, edit backstage memories and prompts, edit/delete/regenerate messages, and optionally comment on the story or generate images and voice. Main chat remains unchanged.",
+  "plugin.description": "Fourth Wall · Direct Character Chat for single and multi-character Tavo cards. Switch between two modes: talk to the fictional character directly with awareness of the fourth wall, or talk backstage with the roleplay partner portraying that character. Sessions, memories and prompt templates are isolated per character and mode. Reads main chat and available memories without modifying the story.",
   "releaseNotes.1_1_1": "Fix missing mandatory localization declaration that prevented v1.1.0 installation on Tavo 1.10. Add bilingual resources and localized UI. Preserve native chat reading, single-window selection and memory retrieval.",
   "ui.open": "Open Fourth Wall",
   "ui.title": "✦ Fourth Wall · Direct Chat",
@@ -36,5 +36,6 @@
   "ui.noActors": "No actors detected. Check the card title.",
   "releaseNotes.1_2_1": "Make installation instructions and built-in fourth-wall prompts generic across single- and multi-character cards; remove named-character and setting examples. Preserve native history retrieval, character selection and lounge deletion.",
   "releaseNotes.1_3_0": "Switch to LittleWhiteBox-style out-of-character RP partner chat, with manual cast selection, sessions, memory summary, prompt editor, message controls, optional commentary and image/voice. Keeps previous lounge data through migration; does not modify main story.",
-  "releaseNotes.1_3_1": "Restore the original Fourth Wall · Direct Character Chat name across the interface and installation description. Keep all backstage roleplay and character-selection functionality unchanged."
+  "releaseNotes.1_3_1": "Restore the original Fourth Wall · Direct Character Chat name across the interface and installation description. Keep all backstage roleplay and character-selection functionality unchanged.",
+  "releaseNotes.1_4_0": "Add two distinct modes: in-character Fourth Wall chat and backstage roleplay partner. Per-character/per-mode isolated sessions, memories and prompts; preserves prior backstage history."
 }
