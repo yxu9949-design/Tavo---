@@ -1,9 +1,9 @@
 {
-  "plugin.name": "Fourth Wall · Direct Character Chat",
-  "plugin.description": "Fourth Wall · Direct Character Chat for single and multi-character Tavo cards. Switch between two modes: talk to the fictional character directly with awareness of the fourth wall, or talk backstage with the roleplay partner portraying that character. Sessions, memories and prompt templates are isolated per character and mode. Reads main chat and available memories without modifying the story.",
+  "plugin.name": "Fourth Wall",
+  "plugin.description": "Fourth Wall: minimal chat page. All cast/mode, sessions, memories, cognition, prompts, and advanced controls are moved to Settings.",
   "releaseNotes.1_1_1": "Fix missing mandatory localization declaration that prevented v1.1.0 installation on Tavo 1.10. Add bilingual resources and localized UI. Preserve native chat reading, single-window selection and memory retrieval.",
   "ui.open": "Open Fourth Wall",
-  "ui.title": "✦ Fourth Wall · Direct Chat",
+  "ui.title": "Fourth Wall",
   "ui.close": "Close",
   "ui.actor": "Character",
   "ui.sync": "Sync story",
@@ -38,5 +38,6 @@
   "releaseNotes.1_3_0": "Switch to LittleWhiteBox-style out-of-character RP partner chat, with manual cast selection, sessions, memory summary, prompt editor, message controls, optional commentary and image/voice. Keeps previous lounge data through migration; does not modify main story.",
   "releaseNotes.1_3_1": "Restore the original Fourth Wall · Direct Character Chat name across the interface and installation description. Keep all backstage roleplay and character-selection functionality unchanged.",
   "releaseNotes.1_4_0": "Add two distinct modes: in-character Fourth Wall chat and backstage roleplay partner. Per-character/per-mode isolated sessions, memories and prompts; preserves prior backstage history.",
-  "releaseNotes.1_4_1": "Improve mobile usability: move the close control from the crowded top-right corner to a large left-aligned header button, add a secondary Close Window button in the fixed footer, and retain all dual-mode chat features."
+  "releaseNotes.1_4_1": "Improve mobile usability: move the close control from the crowded top-right corner to a large left-aligned header button, add a secondary Close Window button in the fixed footer, and retain all dual-mode chat features.",
+  "releaseNotes.1_5_0": "Minimal chat UI with only close, settings, messages, and composer. All controls moved into Settings. Character mode starts unaware of the fourth wall; cognition may be analyzed or manually edited. Existing chats preserved."
 }
