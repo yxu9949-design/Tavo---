@@ -3,7 +3,10 @@
 #fw-launch{position:fixed;right:15px;bottom:94px;z-index:960;width:48px;height:48px;border:1px solid #9987b7;border-radius:50%;background:#292335;color:#f2d7ff;box-shadow:0 5px 20px #0008;font-size:21px;cursor:pointer}
 #fw-panel{position:fixed;right:8px;bottom:76px;z-index:961;width:min(470px,calc(100vw - 16px));height:min(730px,calc(100dvh - 95px));border-radius:16px;background:#1b1726;border:1px solid #67587f;box-shadow:0 20px 45px #000a;display:flex;flex-direction:column;overflow:hidden}
 #fw-panel[hidden]{display:none}#fw-panel *{box-sizing:border-box}#fw-panel button,#fw-panel textarea,#fw-panel input,#fw-panel select{font:inherit}#fw-panel button{cursor:pointer;color:inherit}#fw-panel button:disabled{opacity:.42;cursor:default}
-.fw-header{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#242034;border-bottom:1px solid #40364d}.fw-title{flex:1;min-width:0}.fw-title b{font-family:Georgia,serif;font-size:17px;letter-spacing:.08em}.fw-title small{display:block;font-size:10px;color:#bcb1d3}.fw-close{background:none;border:0;font-size:22px}
+.fw-header{display:flex;align-items:center;gap:10px;padding:10px 12px;min-height:70px;background:#242034;border-bottom:1px solid #40364d}.fw-title{flex:1;min-width:0}.fw-title b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:Georgia,serif;font-size:15px;letter-spacing:.04em}.fw-title small{display:block;font-size:11px;color:#bcb1d3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fw-close{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;gap:4px;min-width:76px;min-height:46px;padding:8px 12px;border:1px solid #9178b2;border-radius:10px;background:#4e3b68!important;color:#fff!important;font-size:14px!important;font-weight:650!important;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.fw-close:active,.fw-close-bottom:active{background:#7d5bad!important;transform:scale(.98)}
+.fw-close:focus-visible,.fw-close-bottom:focus-visible{outline:2px solid #d7b4ff;outline-offset:2px}
 .fw-topline{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;padding:9px 10px;align-items:center;border-bottom:1px solid #40364d}.fw-topline .fw-session-field{grid-column:1;}.fw-topline #fw-sync{grid-column:2;align-self:end}
 .fw-field{display:flex;min-width:0;flex-direction:column;gap:3px;font-size:11px;color:#c3b5d6}.fw-field select{width:100%;padding:7px 6px;border-radius:7px;background:#322a40;border:1px solid #61516f;color:#fff}
 .fw-small{padding:7px;border-radius:7px;border:1px solid #625477;background:#373047;font-size:12px}
@@ -23,12 +26,15 @@
 .fw-actions{display:flex;gap:7px;flex-wrap:wrap}.fw-actions button{padding:7px 9px;background:#352b45;border:1px solid #675776;border-radius:7px;font-size:12px}
 .fw-setting{display:flex;align-items:center;justify-content:space-between;gap:12px}.fw-setting label{flex:1}.fw-setting input[type=number]{width:82px}.fw-setting input[type=checkbox]{width:18px;height:18px}
 .fw-divider{height:1px;background:#41364e;margin:5px 0}.fw-danger{border-color:#834856!important;color:#ffbec5!important}
-.fw-foot{padding:6px 10px;background:#211c2f;border-top:1px solid #40364d;font-size:10px;color:#9b8eaf}
+.fw-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:0 0 auto;padding:8px 12px;background:#211c2f;border-top:1px solid #40364d;font-size:11px;color:#b8aacb}
+.fw-foot span{min-width:0;flex:1;line-height:1.5}
+.fw-close-bottom{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:112px;min-height:46px;padding:10px 15px;border:1px solid #9b7bc2;border-radius:10px;background:#644984!important;color:#fff!important;font-weight:650!important;font-size:14px!important;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+@media(max-width:380px){.fw-header{gap:8px;padding:8px 10px}.fw-title b{font-size:14px}.fw-close{min-width:68px;padding:7px 9px}.fw-foot{padding:7px 10px}.fw-close-bottom{min-width:100px}}
 </style>
 <div id="fourthwall-chat-root">
 <button id="fw-launch" type="button" aria-label="打开第四面墙">Ⅳ</button>
 <section id="fw-panel" aria-label="第四面墙会客厅" hidden>
-<header class="fw-header"><div class="fw-title"><b>Ⅳ 第四面墙 · 角色直聊</b><small id="fw-subtitle">皮下交流 · 独立会客厅</small></div><button id="fw-close" class="fw-close" type="button" aria-label="关闭">×</button></header>
+<header class="fw-header"><button id="fw-close" class="fw-close" type="button" aria-label="关闭第四面墙">← 关闭</button><div class="fw-title"><b>Ⅳ 第四面墙 · 角色直聊</b><small id="fw-subtitle">皮下交流 · 独立会客厅</small></div></header>
 <div class="fw-topline">
 <label class="fw-field">选择人物<select id="fw-actor"></select></label>
 <label class="fw-field">交流模式<select id="fw-mode"><option value="role">角色本人直聊</option><option value="backstage">皮下语 C 搭档</option></select></label>
@@ -85,6 +91,6 @@
 <div class="fw-actions"><button id="fw-settings-save" class="fw-primary" type="button">保存设置</button><button id="fw-export" type="button">导出当前记录</button></div>
 <p class="fw-help">TavoJS 目前不提供真正的流式 token 回调，回复会在请求完成后整体显示。自动吐槽和自动总结默认关闭，以避免产生额外 API 费用。</p>
 </div></div>
-<footer class="fw-foot">读主线、不改主线 · 人物与模式分别保存</footer>
+<footer class="fw-foot"><span>读主线、不改主线<br>人物与模式分别保存</span><button id="fw-close-bottom" class="fw-close-bottom" type="button" aria-label="收起第四面墙">收起窗口</button></footer>
 </section></div>
 <script src="/plugins/dev.yxu9949-design.fourthwall-room/ui/panel.js"></script>
