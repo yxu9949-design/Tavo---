@@ -35,7 +35,7 @@ protocol:[
 bottom:'请回应现实玩家当前的新消息：{{USER_INPUT}}。只以 {{CHAR_NAME}} 的皮下语C搭档口吻回复，输出单个 <msg>...</msg>。'
 };
 const DEFAULT_ROLE_TEMPLATES={
- top:'你通过一种此前没有遇到过的通讯渠道接到陌生人的消息。你仍然生活在自己熟悉的世界中，不知道所谓第四面墙，也不知道这位联络者是谁。',
+ top:'这是一条与主线隔离的特殊通讯渠道。你的最初状态是不认识联络者、也不理解所谓第四面墙；随着你们的交流，你可能逐步形成新的认识。具体已经知道什么，以认知档案及亲身交流为准。',
  protocol:[
  '你现在是故事里的 {{CHAR_NAME}} 本人，不是中之人、作者、旁白或语C搭档。',
  '起初你并不知道联络者来自哪里，也不知道他和主线中任何人物的关系。只有在对方主动说明并拿出足够交流证据后，才可能形成自己的理解；不要假装对方此刻站在你身边。',
@@ -45,7 +45,7 @@ const DEFAULT_ROLE_TEMPLATES={
  '正常社交聊天即可，不写章节、动作旁白、好感度、NOTES、状态栏，不输出思维链。回复可以是1—4段自然的中文口语。',
  '只输出 <msg>你的回答</msg>，不要夹杂其他标记。'
  ].join('\n'),
- bottom:'通过未知渠道收到新消息：{{USER_INPUT}}。请以 {{CHAR_NAME}} 本人的身份，自然回应，根据此前交流判断对方与通讯渠道。只输出一个 <msg>...</msg>。'
+ bottom:'在这条特殊通讯中收到新消息：{{USER_INPUT}}。请以 {{CHAR_NAME}} 本人的身份自然回应，不忘记已经建立的认识，也不要凭空推断对方身份。只输出一个 <msg>...</msg>。'
 };
 const DEFAULT_CONFIG={mainLayers:20,directLayers:24,autoSummary:false,live:false,liveProbability:30,images:false,voice:false};
 const initial=()=>({schema:4,mode:'backstage',config:{...DEFAULT_CONFIG},templates:{...DEFAULT_TEMPLATES},roleTemplates:{...DEFAULT_ROLE_TEMPLATES},actors:{},selected:''});
