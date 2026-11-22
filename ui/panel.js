@@ -6,7 +6,7 @@ if(!root || root.dataset.fwReady) return;
 root.dataset.fwReady='1';
 const $=id=>root.querySelector('#'+id);
 const ui={
- launch:$('fw-launch'),panel:$('fw-panel'),close:$('fw-close'),mode:$('fw-mode'),actor:$('fw-actor'),session:$('fw-session'),
+ launch:$('fw-launch'),panel:$('fw-panel'),close:$('fw-close'),closeBottom:$('fw-close-bottom'),mode:$('fw-mode'),actor:$('fw-actor'),session:$('fw-session'),
  sync:$('fw-sync'),info:$('fw-info'),log:$('fw-log'),form:$('fw-compose'),input:$('fw-input'),send:$('fw-send'),
  newSession:$('fw-new'),rename:$('fw-rename'),removeSession:$('fw-remove-session'),regenerate:$('fw-regenerate'),
  comment:$('fw-comment'),clear:$('fw-clear'),memory:$('fw-memory'),memoryStats:$('fw-memory-stats'),
@@ -428,8 +428,11 @@ function startPolling(){
 if(runtime.poll)clearInterval(runtime.poll);
 if(runtime.data.config.live)runtime.poll=setInterval(poll,23000);
 }
-ui.launch.onclick=()=>{ui.panel.hidden=!ui.panel.hidden;if(!ui.panel.hidden){ui.input.focus();}};
-ui.close.onclick=()=>ui.panel.hidden=true;
+function closePanel(){ui.panel.hidden=true;ui.launch.setAttribute('aria-expanded','false');}
+ui.launch.setAttribute('aria-expanded','false');
+ui.launch.onclick=()=>{ui.panel.hidden=!ui.panel.hidden;ui.launch.setAttribute('aria-expanded',String(!ui.panel.hidden));if(!ui.panel.hidden){ui.input.focus();}};
+ui.close.onclick=closePanel;
+ui.closeBottom.onclick=closePanel;
 root.querySelectorAll('[data-view]').forEach(el=>el.onclick=()=>switchView(el.dataset.view));
 ui.actor.onchange=async()=>{runtime.data.selected=ui.actor.value;await save();redrawSessions();renderMemory();};
 ui.mode.onchange=async()=>{if(runtime.busy)return;runtime.data.mode=ui.mode.value==='role'?'role':'backstage';applyModeUI();await save();redrawSessions();renderMemory();renderPrompt();status('已切换到'+modeLabel()+'模式；聊天记录和记忆分开保存');};
