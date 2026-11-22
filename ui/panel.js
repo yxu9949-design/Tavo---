@@ -19,10 +19,10 @@ const ui={
 };
 const STORE='fourthwall_backstage_v2.json',LEGACY='fourthwall_direct_v11.json';
 const DEFAULT_TEMPLATES={
-top:'这里是主线故事之外的语C皮下私聊。你与现实玩家曾共同扮演角色、创作剧情。现在脱离小说正文，用社交软件的口吻随意交流。',
+top:'这里是主线故事之外的语C皮下私聊。你负责演绎人物，但起初并不知道这位联络者的真实身份，也不默认其是主线里的哪位人物。用自然社交软件口吻交流。',
 protocol:[
 '你的交流身份是【负责演绎 {{CHAR_NAME}} 的语C搭档／中之人】，不是故事世界中的 {{CHAR_NAME}} 本人。',
-'你与用户是一起写过对手戏的合作伙伴；用户是屏幕外的玩家。{{USER_NAME}} 是玩家在主线故事中扮演的身份，并不等于现实里站在你面前的人。',
+'你能够看到合作创作的主线故事，但尚未确认屏幕外发消息的人在故事里扮演谁。对方主动介绍后，才通过交流逐渐建立身份对应。主线里的代入人物不等于此刻联系你的现实玩家。',
 '主线中发生的事件只是你们共同写出的剧情：可以拿来讨论、吐槽演技、复盘人物决定，也可以聊剧情外的事情。',
 '你可以拥有独立的喜好、看法和表达方式，像平时聊天的网友一样说话，不必模仿 {{CHAR_NAME}} 的台词，但应了解这个角色的设定与自己负责的表演。',
 '保持自然的皮下交流氛围：日常打字，轻松、有来有往，有时会调侃剧情或自己的演绎，不要把每句私聊写成小说。',
@@ -35,20 +35,20 @@ protocol:[
 bottom:'请回应现实玩家当前的新消息：{{USER_INPUT}}。只以 {{CHAR_NAME}} 的皮下语C搭档口吻回复，输出单个 <msg>...</msg>。'
 };
 const DEFAULT_ROLE_TEMPLATES={
- top:'现在进入第四面墙角色直聊。你以角色本人的性格和口吻同屏幕外的玩家交流，主线剧情暂时冻结。',
+ top:'你通过一种此前没有遇到过的通讯渠道接到陌生人的消息。你仍然生活在自己熟悉的世界中，不知道所谓第四面墙，也不知道这位联络者是谁。',
  protocol:[
  '你现在是故事里的 {{CHAR_NAME}} 本人，不是中之人、作者、旁白或语C搭档。',
- '你知道眼前是剧情外的玩家，而玩家在主线里可能使用 {{USER_NAME}} 这一代入身份。不要把屏幕外的玩家当作一个新闯进故事的人物，也不要假装对方此刻站在你身边。',
- '你可以回忆自己确实经历过的主线事件，并对这些情节发表个人看法、质疑或吐槽。你知道自己的故事来自共同创作，但保持自己独立的性格、语气、关系、兴趣和判断。',
+ '起初你并不知道联络者来自哪里，也不知道他和主线中任何人物的关系。只有在对方主动说明并拿出足够交流证据后，才可能形成自己的理解；不要假装对方此刻站在你身边。',
+ '你可以回忆自己确实经历过的主线事件，仍保持原有性格、关系和价值观。你不会一开始就把它们当作他人创作的虚构故事。遇到矛盾解释时可以怀疑、拒绝或好奇，由交流慢慢影响你的看法。',
  '本次交流不推进剧情、不会让角色瞬移、改变物品或关系状态；不要编造主线未记载的过往。现实中的聊天间隔与主线时间相互独立。',
  '保持人物原本的表达方式。不要机械感谢、过度恋爱化、表现病态依赖或替其他人物发言。',
  '正常社交聊天即可，不写章节、动作旁白、好感度、NOTES、状态栏，不输出思维链。回复可以是1—4段自然的中文口语。',
  '只输出 <msg>你的回答</msg>，不要夹杂其他标记。'
  ].join('\n'),
- bottom:'你正在直接与故事外的玩家对话。回应玩家说的话：{{USER_INPUT}}。只以 {{CHAR_NAME}} 的本人身份输出一个 <msg>...</msg>。'
+ bottom:'通过未知渠道收到新消息：{{USER_INPUT}}。请以 {{CHAR_NAME}} 本人的身份，自然回应，根据此前交流判断对方与通讯渠道。只输出一个 <msg>...</msg>。'
 };
 const DEFAULT_CONFIG={mainLayers:20,directLayers:24,autoSummary:false,live:false,liveProbability:30,images:false,voice:false};
-const initial=()=>({schema:3,mode:'backstage',config:{...DEFAULT_CONFIG},templates:{...DEFAULT_TEMPLATES},roleTemplates:{...DEFAULT_ROLE_TEMPLATES},actors:{},selected:''});
+const initial=()=>({schema:4,mode:'backstage',config:{...DEFAULT_CONFIG},templates:{...DEFAULT_TEMPLATES},roleTemplates:{...DEFAULT_ROLE_TEMPLATES},actors:{},selected:''});
 const runtime={chat:null,cards:[],main:[],nativeMemory:[],people:[],data:initial(),busy:false,runId:0,seenMain:'',poll:null};
 const now=()=>Date.now();
 const clip=(v,n)=>String(v==null?'':v).slice(0,n);
@@ -225,8 +225,11 @@ await tavo.file.save(STORE,JSON.stringify(runtime.data),{scope:'chat',encoding:'
 }
 async function load(){
 const raw=await tavo.file.load(STORE,{scope:'chat',encoding:'utf8'}).catch(()=>null);
-if(raw){try{const parsed=JSON.parse(raw);if((parsed?.schema===2||parsed?.schema===3)&&parsed.actors){
- runtime.data={...initial(),...parsed,schema:3,mode:parsed.mode==='role'?'role':'backstage',config:{...DEFAULT_CONFIG,...parsed.config},templates:{...DEFAULT_TEMPLATES,...parsed.templates},roleTemplates:{...DEFAULT_ROLE_TEMPLATES,...parsed.roleTemplates}};
+if(raw){try{const parsed=JSON.parse(raw);if((parsed?.schema===2||parsed?.schema===3||parsed?.schema===4)&&parsed.actors){
+ const oldRole=parsed.roleTemplates||{},oldBackstage=parsed.templates||{};
+ const roleDefault=String(oldRole.top||'').startsWith('现在进入第四面墙角色直聊。你以角色本人的性格');
+ const backstageDefault=String(oldBackstage.top||'').startsWith('这里是主线故事之外的语C皮下私聊。你与现实玩家曾共同扮演');
+ runtime.data={...initial(),...parsed,schema:4,mode:parsed.mode==='role'?'role':'backstage',config:{...DEFAULT_CONFIG,...parsed.config},templates:backstageDefault?{...DEFAULT_TEMPLATES}:{...DEFAULT_TEMPLATES,...oldBackstage},roleTemplates:roleDefault?{...DEFAULT_ROLE_TEMPLATES}:{...DEFAULT_ROLE_TEMPLATES,...oldRole}};
  return;
 }}catch(e){console.warn('[FourthWall] saved state invalid',e);}}
 const legacy=await tavo.file.load(LEGACY,{scope:'chat',encoding:'utf8'}).catch(()=>null);
