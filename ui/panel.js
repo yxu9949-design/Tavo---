@@ -159,7 +159,11 @@ function distinctActors(){
 const map=new Map(),cards=runtime.cards;
 for(const c of cards){if(cards.length>1)addPerson(map,c.name,5);else fromTitle(map,c.name);}
 // When multiple named protagonists are already known from the card, do not treat a chapter's user-avatar name as a new speaking role.
-if(map.size<2)for(const m of runtime.main.slice(-80)){if(m.role==='assistant')fromHeaders(map,m.raw);}
+if(map.size<2){
+  for(const m of runtime.main.slice(-80)){if(m.role==='assistant')fromHeaders(map,m.raw);}
+  // Generic card titles are not speaking characters when multiple explicit chapter NAME entries exist.
+  if([...map.values()].filter(w=>w>=2).length>=2){for(const [name,weight] of map)if(weight===1)map.delete(name);}
+}
 if(!map.size&&cards[0])addPerson(map,cards[0].name,1);
 runtime.people=[...map.entries()].sort((a,b)=>b[1]-a[1]).map(x=>x[0]).slice(0,24);
 if(runtime.data.selected&&!runtime.people.includes(runtime.data.selected))runtime.people.unshift(runtime.data.selected);
