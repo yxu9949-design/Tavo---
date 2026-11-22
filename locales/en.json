@@ -37,5 +37,6 @@
   "releaseNotes.1_2_1": "Make installation instructions and built-in fourth-wall prompts generic across single- and multi-character cards; remove named-character and setting examples. Preserve native history retrieval, character selection and lounge deletion.",
   "releaseNotes.1_3_0": "Switch to LittleWhiteBox-style out-of-character RP partner chat, with manual cast selection, sessions, memory summary, prompt editor, message controls, optional commentary and image/voice. Keeps previous lounge data through migration; does not modify main story.",
   "releaseNotes.1_3_1": "Restore the original Fourth Wall · Direct Character Chat name across the interface and installation description. Keep all backstage roleplay and character-selection functionality unchanged.",
-  "releaseNotes.1_4_0": "Add two distinct modes: in-character Fourth Wall chat and backstage roleplay partner. Per-character/per-mode isolated sessions, memories and prompts; preserves prior backstage history."
+  "releaseNotes.1_4_0": "Add two distinct modes: in-character Fourth Wall chat and backstage roleplay partner. Per-character/per-mode isolated sessions, memories and prompts; preserves prior backstage history.",
+  "releaseNotes.1_4_1": "Improve mobile usability: move the close control from the crowded top-right corner to a large left-aligned header button, add a secondary Close Window button in the fixed footer, and retain all dual-mode chat features."
 }
