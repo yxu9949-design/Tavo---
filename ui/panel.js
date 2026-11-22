@@ -158,7 +158,8 @@ m[1].split(/\s*[/、，|;；]\s*|\s+and\s+/i).forEach(n=>addPerson(map,n,2));}
 function distinctActors(){
 const map=new Map(),cards=runtime.cards;
 for(const c of cards){if(cards.length>1)addPerson(map,c.name,5);else fromTitle(map,c.name);}
-for(const m of runtime.main.slice(-80)){if(m.role==='assistant')fromHeaders(map,m.raw);}
+// When multiple named protagonists are already known from the card, do not treat a chapter's user-avatar name as a new speaking role.
+if(map.size<2)for(const m of runtime.main.slice(-80)){if(m.role==='assistant')fromHeaders(map,m.raw);}
 if(!map.size&&cards[0])addPerson(map,cards[0].name,1);
 runtime.people=[...map.entries()].sort((a,b)=>b[1]-a[1]).map(x=>x[0]).slice(0,24);
 if(runtime.data.selected&&!runtime.people.includes(runtime.data.selected))runtime.people.unshift(runtime.data.selected);
@@ -167,7 +168,7 @@ function mainKey(m){return String(m?.id??'')+'|'+String(m?.content||'').slice(-1
 async function ingest(){
 runtime.chat=await tavo.chat.current();if(!runtime.chat)throw Error('请先打开一个 Tavo 聊天');
 const raw=await tavo.message.find([]);
-runtime.main=(Array.isArray(raw)?raw:[]).filter(m=>m&&!m.hidden).map((m,i)=>({
+runtime.main=(Array.isArray(raw)?raw:[]).filter(m=>m&&!m.hidden&&(m.role==='assistant'||m.role==='user')).map((m,i)=>({
 role:m.role==='assistant'?'assistant':'user',
 raw:txt(m),content:cleanMain(txt(m)),id:m.id??i,ts:Number(m.timestamp||m.createdAt||m.ts||now())
 })).filter(m=>m.content);
