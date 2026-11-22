@@ -6,7 +6,7 @@ if(!root || root.dataset.fwReady) return;
 root.dataset.fwReady='1';
 const $=id=>root.querySelector('#'+id);
 const ui={
- launch:$('fw-launch'),panel:$('fw-panel'),close:$('fw-close'),closeBottom:$('fw-close-bottom'),mode:$('fw-mode'),actor:$('fw-actor'),session:$('fw-session'),
+ launch:$('fw-launch'),panel:$('fw-panel'),close:$('fw-close'),settingsOpen:$('fw-settings-open'),settingsShell:$('fw-settings-shell'),back:$('fw-back'),messageAdmin:$('fw-message-admin'),cognitionStage:$('fw-cognition-stage'),cognitionIdentity:$('fw-cognition-identity'),cognitionClaim:$('fw-cognition-claim'),cognitionNotes:$('fw-cognition-notes'),cognitionSave:$('fw-cognition-save'),cognitionAnalyze:$('fw-cognition-analyze'),cognitionReset:$('fw-cognition-reset'),mode:$('fw-mode'),actor:$('fw-actor'),session:$('fw-session'),
  sync:$('fw-sync'),info:$('fw-info'),log:$('fw-log'),form:$('fw-compose'),input:$('fw-input'),send:$('fw-send'),
  newSession:$('fw-new'),rename:$('fw-rename'),removeSession:$('fw-remove-session'),regenerate:$('fw-regenerate'),
  comment:$('fw-comment'),clear:$('fw-clear'),memory:$('fw-memory'),memoryStats:$('fw-memory-stats'),
@@ -54,7 +54,10 @@ const now=()=>Date.now();
 const clip=(v,n)=>String(v==null?'':v).slice(0,n);
 const txt=x=>typeof x==='string'?x:typeof x?.content==='string'?x.content:typeof x?.mes==='string'?x.mes:typeof x?.text==='string'?x.text:'';
 const getId=x=>typeof x==='object' && x!==null?x.id:x;
-function status(s){ui.info.textContent=String(s||'');}
+function status(s){
+ const msg=String(s||'');ui.info.textContent=msg;
+ ui.info.hidden=!msg||/^(?:读取主线|已保存|已切换到|会客厅设置已保存|皮下记忆已保存)/.test(msg);
+}
 function safeName(n){return String(n||'').replace(/[「」“”【】]/g,'').trim();}
 function cleanMain(value){
 return String(value||'')
@@ -88,9 +91,8 @@ function modeLabel(){return currentMode()==='role'?'角色本人':'皮下搭档'
 function templates(){return currentMode()==='role'?runtime.data.roleTemplates:runtime.data.templates;}
 function applyModeUI(){
  ui.mode.value=currentMode();
- ui.input.placeholder=currentMode()==='role'?'直接对选中角色说话……':'对扮演选中人物的语C搭档说话……';
- const small=root.querySelector('.fw-title small');
- if(small)small.textContent=currentMode()==='role'?'角色本人 · 故事外直聊':'皮下语C · 独立会客厅';
+ ui.input.placeholder='输入消息……';
+ const cogTab=root.querySelector('[data-view="cognition"]');if(cogTab)cogTab.hidden=currentMode()!=='role';
 }
 function ensureActor(name){
 const key=currentMode()==='role'?'role::'+name:name;
@@ -101,9 +103,16 @@ function actorName(){return runtime.data.selected||runtime.people[0]||'';}
 function actor(){return ensureActor(actorName());}
 function session(){const a=actor();return a.sessions.find(s=>s.id===a.active)||a.sessions[0];}
 function switchView(page){
+const settingPage=page!=='chat';
+ui.settingsShell.hidden=!settingPage;
+ui.settingsOpen.setAttribute('aria-expanded',String(settingPage));
 root.querySelectorAll('.fw-view').forEach(e=>e.hidden=e.dataset.page!==page);
 root.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.view===page)));
-if(page==='memory')renderMemory();if(page==='prompt')renderPrompt();if(page==='settings')renderSettings();
+if(page==='memory')renderMemory();
+if(page==='prompt')renderPrompt();
+if(page==='settings')renderSettings();
+if(page==='cognition')renderCognition();
+if(page==='messages')renderMessageAdmin();
 }
 function redrawActors(){
 const before=ui.actor.value;ui.actor.textContent='';
@@ -146,7 +155,7 @@ ui.log.append(wrap);
 }
 if(!s.history.length)notice(currentMode()==='role'?'现在可以直接和角色本人交流。主线故事不会因此改变。':'这里是皮下私聊。我们可以讨论共同写过的剧情，也能随便聊些剧情之外的事。');
 ui.log.scrollTop=ui.log.scrollHeight;
-ui.regenerate.disabled=runtime.busy||!s.history.some(x=>x.role==='user');
+ui.regenerate.disabled=runtime.busy||!s.history.some(x=>x.role==='user');renderMessageAdmin();
 }
 async function save(){
 await tavo.file.save(STORE,JSON.stringify(runtime.data),{scope:'chat',encoding:'utf8'});
@@ -430,19 +439,20 @@ if(runtime.data.config.live)runtime.poll=setInterval(poll,23000);
 }
 function closePanel(){ui.panel.hidden=true;ui.launch.setAttribute('aria-expanded','false');}
 ui.launch.setAttribute('aria-expanded','false');
-ui.launch.onclick=()=>{ui.panel.hidden=!ui.panel.hidden;ui.launch.setAttribute('aria-expanded',String(!ui.panel.hidden));if(!ui.panel.hidden){ui.input.focus();}};
+ui.launch.onclick=()=>{ui.panel.hidden=!ui.panel.hidden;ui.launch.setAttribute('aria-expanded',String(!ui.panel.hidden));if(!ui.panel.hidden){switchView('chat');ui.input.focus();}};
 ui.close.onclick=closePanel;
-ui.closeBottom.onclick=closePanel;
+ui.settingsOpen.onclick=()=>switchView('settings');
+ui.back.onclick=()=>{switchView('chat');ui.input.focus();};
 root.querySelectorAll('[data-view]').forEach(el=>el.onclick=()=>switchView(el.dataset.view));
-ui.actor.onchange=async()=>{runtime.data.selected=ui.actor.value;await save();redrawSessions();renderMemory();};
-ui.mode.onchange=async()=>{if(runtime.busy)return;runtime.data.mode=ui.mode.value==='role'?'role':'backstage';applyModeUI();await save();redrawSessions();renderMemory();renderPrompt();status('已切换到'+modeLabel()+'模式；聊天记录和记忆分开保存');};
+ui.actor.onchange=async()=>{runtime.data.selected=ui.actor.value;await save();redrawSessions();renderMemory();renderCognition();};
+ui.mode.onchange=async()=>{if(runtime.busy)return;runtime.data.mode=ui.mode.value==='role'?'role':'backstage';applyModeUI();await save();redrawSessions();renderMemory();renderPrompt();renderCognition();switchView('settings');status('已切换到'+modeLabel()+'模式；聊天记录和记忆分开保存');};
 ui.session.onchange=async()=>{actor().active=ui.session.value;await save();render();renderMemory();};
 ui.form.addEventListener('submit',send);
 ui.input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ui.form.requestSubmit();}});
 ui.sync.onclick=async()=>{if(runtime.busy)return;status('正在同步主线……');try{await ingest();}catch(e){status('同步失败：'+(e?.message||e));}};
 ui.newSession.onclick=createSession;ui.rename.onclick=renameSession;ui.removeSession.onclick=removeSession;
 ui.regenerate.onclick=regenerate;ui.comment.onclick=manualComment;ui.clear.onclick=clearChat;
-ui.memorySave.onclick=async()=>{session().memory=ui.memory.value.trim();await save();renderMemory();status('皮下记忆已保存');};
+ui.memorySave.onclick=async()=>{session().memory=ui.memory.value.trim();await save();renderMemory();status('独立记忆已保存');};
 ui.memorySummary.onclick=()=>summarize(true);
 ui.memoryClear.onclick=async()=>{if(!confirm('清空当前记录的皮下记忆？聊天原文保留，但已归档内容将不再有总结。'))return;session().memory='';session().archivedCount=0;await save();renderMemory();status('皮下记忆已清空');};
 ui.promptSave.onclick=savePrompt;ui.promptReset.onclick=resetPrompt;
