@@ -1,6 +1,6 @@
 {
   "plugin.name": "Fourth Wall · Direct Character Chat",
-  "plugin.description": "A nonofficial Fourth Wall direct-chat plugin for single-character and multi-character Tavo cards, across any fiction or setting. Reads accessible assistant replies and long-term memories from the current chat, lets you choose a character in one window, and keeps this out-of-story conversation separate. Supports deleting individual lounge messages or clearing the selected character's lounge history without editing main-story messages or character cards.",
+  "plugin.description": "A backstage roleplay partner lounge inspired by LittleWhiteBox. Works with single or multi-character Tavo cards in one window: choose the character being portrayed, read the main story and memories, chat out-of-character, manage sessions, edit memories and prompts, regenerate/edit/delete messages, and optionally comment on story or generate images/voice. Main chat remains untouched.",
   "releaseNotes.1_1_1": "Fix missing mandatory localization declaration that prevented v1.1.0 installation on Tavo 1.10. Add bilingual resources and localized UI. Preserve native chat reading, single-window selection and memory retrieval.",
   "ui.open": "Open Fourth Wall",
   "ui.title": "✦ Fourth Wall · Direct Chat",
@@ -34,5 +34,6 @@
   "ui.deleted": "Deleted the selected Fourth Wall message; main story untouched.",
   "ui.deleteError": "Delete failed: {error}",
   "ui.noActors": "No actors detected. Check the card title.",
-  "releaseNotes.1_2_1": "Make installation instructions and built-in fourth-wall prompts generic across single- and multi-character cards; remove named-character and setting examples. Preserve native history retrieval, character selection and lounge deletion."
+  "releaseNotes.1_2_1": "Make installation instructions and built-in fourth-wall prompts generic across single- and multi-character cards; remove named-character and setting examples. Preserve native history retrieval, character selection and lounge deletion.",
+  "releaseNotes.1_3_0": "Switch to LittleWhiteBox-style out-of-character RP partner chat, with manual cast selection, sessions, memory summary, prompt editor, message controls, optional commentary and image/voice. Keeps previous lounge data through migration; does not modify main story."
 }
