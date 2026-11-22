@@ -102,6 +102,69 @@ return runtime.data.actors[key];
 function actorName(){return runtime.data.selected||runtime.people[0]||'';}
 function actor(){return ensureActor(actorName());}
 function session(){const a=actor();return a.sessions.find(s=>s.id===a.active)||a.sessions[0];}
+
+const COGNITION_STAGES={unknown:'尚未意识到',unusual:'察觉异常',exploring:'逐渐理解',aware:'已形成理解'};
+const COGNITION_IDENTITIES={unknown:'玩家身份未知',claimed:'自述身份，尚未确认',tentative:'暂时相信',confirmed:'已确认'};
+function cognition(){
+ const a=actor();if(!a.cognition||typeof a.cognition!=='object')a.cognition={stage:'unknown',identity:'unknown',claimed:'',notes:''};
+ return a.cognition;
+}
+function cognitionForPrompt(){
+ const c=cognition();return '意识状态：'+(COGNITION_STAGES[c.stage]||COGNITION_STAGES.unknown)+'；身份判断：'+(COGNITION_IDENTITIES[c.identity]||COGNITION_IDENTITIES.unknown)
+ +(c.claimed?'；对方自称：'+clip(c.claimed,100):'')+(c.notes?'；认知依据：'+clip(c.notes,1600):'')+
+ '。只依据这些已建立的认识自然回应，不因知道主线人物名称就推断对方身份。';
+}
+function renderCognition(){
+ if(currentMode()!=='role')return;
+ const c=cognition();
+ ui.cognitionStage.value=c.stage||'unknown';ui.cognitionIdentity.value=c.identity||'unknown';
+ ui.cognitionClaim.value=c.claimed||'';ui.cognitionNotes.value=c.notes||'';
+}
+async function saveCognition(){
+ if(currentMode()!=='role')return;
+ const c=cognition();c.stage=COGNITION_STAGES[ui.cognitionStage.value]?ui.cognitionStage.value:'unknown';
+ c.identity=COGNITION_IDENTITIES[ui.cognitionIdentity.value]?ui.cognitionIdentity.value:'unknown';
+ c.claimed=clip(ui.cognitionClaim.value.trim(),100);c.notes=clip(ui.cognitionNotes.value.trim(),2500);
+ await save();status('认知档案已保存');
+}
+async function resetCognition(){
+ if(currentMode()!=='role'||!confirm('重新开始认识？认知档案会清空，但旧聊天和主线不会删除。'))return;
+ actor().cognition={stage:'unknown',identity:'unknown',claimed:'',notes:''};
+ await save();renderCognition();status('认知档案已重置');
+}
+async function analyzeCognition(){
+ if(currentMode()!=='role'||runtime.busy)return;
+ const entries=session().history.slice(-24);
+ if(entries.length<2){status('私聊消息不足，暂时无法分析');return;}
+ lock(true);status('正在分析认知（额外调用模型）……');
+ try{
+  const old=cognition(),stageOrder=Object.keys(COGNITION_STAGES),idOrder=Object.keys(COGNITION_IDENTITIES);
+  const instruction='请只根据给定的角色本人私聊历史、已有认知档案，保守更新认知。输出JSON对象，键为stage、identity、claimed、notes。stage只允许unknown/unusual/exploring/aware；identity只允许unknown/claimed/tentative/confirmed。只有对话里有明确可观察证据才能提升状态，每轮最多提升一个阶段。玩家自报名字不等于确认身份；主线中的代入人物和现实玩家不能自动认定为同一人。不足证据保持旧状态。notes用中文说明理由。不要解释或Markdown。';
+  const raw=await callGenerator(instruction+'\n旧认知：'+JSON.stringify(old)+'\n近期私聊：\n'+formatMeta(entries),650);
+  const m=raw.match(/\{[\s\S]*\}/);if(!m)throw Error('返回结果没有JSON对象');
+  const v=JSON.parse(m[0]);
+  let stage=stageOrder.includes(v.stage)?v.stage:old.stage,identity=idOrder.includes(v.identity)?v.identity:old.identity;
+  if(stageOrder.indexOf(stage)>stageOrder.indexOf(old.stage)+1)stage=stageOrder[stageOrder.indexOf(old.stage)+1];
+  if(idOrder.indexOf(identity)>idOrder.indexOf(old.identity)+1)identity=idOrder[idOrder.indexOf(old.identity)+1];
+  actor().cognition={stage,identity,claimed:clip(String(v.claimed||old.claimed||''),100),notes:clip(String(v.notes||old.notes||''),2500)};
+  await save();renderCognition();status('分析完成，可手动修正认知档案');
+ }catch(e){status('认知分析失败：'+(e?.message||e));}
+ finally{lock(false);}
+}
+function renderMessageAdmin(){
+ const container=ui.messageAdmin;if(!container)return;container.textContent='';
+ const hist=session().history;
+ if(!hist.length){container.textContent='暂无消息';return;}
+ for(let i=hist.length-1;i>=Math.max(0,hist.length-30);i--){
+  const msg=hist[i],line=document.createElement('div');line.className='fw-message-admin-line';
+  const label=document.createElement('span');
+  label.textContent=(msg.role==='user'?'我：':actorName()+'：')+clip(msg.content.replace(/\s+/g,' '),100);
+  const edit=document.createElement('button');edit.type='button';edit.textContent='编辑';edit.onclick=()=>editMessage(i);
+  const del=document.createElement('button');del.type='button';del.textContent='删除';del.onclick=()=>deleteMessage(i);
+  line.append(label,edit,del);container.append(line);
+ }
+}
+
 function switchView(page){
 const settingPage=page!=='chat';
 ui.settingsShell.hidden=!settingPage;
@@ -237,7 +300,7 @@ const source=(candidates.length?candidates:runtime.cards).map(c=>[c.name,c.descr
 return clip(source,7000);
 }
 function fill(template,input){
-const persona=String(runtime.chat?.persona?.name||'主线玩家化身');
+const persona=currentMode()==='role'?'（玩家尚未主动介绍）':String(runtime.chat?.persona?.name||'主线玩家化身');
 return String(template||'').replace(/{{CHAR_NAME}}/g,actorName()).replace(/{{USER_NAME}}/g,persona).replace(/{{USER_INPUT}}/g,input);
 }
 function promptFor(input,kind){
@@ -251,9 +314,9 @@ if(c.voice)extras.push('语音可写 [voice:happy:内容]，仅玩家点击播�
 const framing=role?
 [
  '【模式：角色本人直聊｜第四面墙】',
- '你只能以「'+name+'」本人进行对话，不是配音者、作者、中之人或语C搭档。你知道当前正面对屏幕外的玩家，而不是主线故事里的人物。',
- '当前主线已暂停；你可以讨论或评价自己的经历，但不能宣称这些剧情真的发生在现实玩家身上。保留角色卡确定的人格、世界观、关系及已发生的情节。',
- '故事里 {{user}} 对应玩家的代入身份；不要把对话中的“你”理解为一个凭空进入场景的新角色。绝不替现实玩家决定行动。',
+ '你只能以「'+name+'」本人回应，不是幕后演员或语C搭档。起初你只察觉到来自未知渠道的联络，不知道第四面墙存在，也不知道联络者的现实身份。',
+ '特殊通讯不会推进主线。你保留自己的世界观、原有人格和真实经历。对于异常现象、世界之外的事和联络者身份，只能根据私聊证据逐渐形成认识，不能突然跳阶段。',
+ '在主线中你知道某些人物的名字，但不代表你知道通讯者就是其中任何一人。对方自称身份也不能立即当作确认，除非你们通过交流建立信任和证据。',
  '不要机械表达爱情或感谢。不要为制造情绪而OOC，不要越过已知记忆捏造事情。只输出一个 <msg>...</msg>，不要旁白、思维链或小说格式。'
 ]:[
  '【模式：皮下语C搭档｜第四面墙】',
@@ -268,6 +331,7 @@ return [
 '【人物设定资料】\n'+profile(),
 '【Tavo 可读长期记忆（主线事实，不等于现实生活）】\n'+clip(runtime.nativeMemory.join('\n'),6000),
 '【当前模式独立记忆】\n'+clip(s.memory,6000),
+...(role?['【第四面墙独立认知档案】\n'+cognitionForPrompt()]:[]),
 '【已保存主线片段（只读）】\n'+formatMain(input),
 '【当前模式独立聊天历史】\n'+(meta||'（首次交流）'),
 '【可选媒体协议】\n'+extras.join('\n'),
@@ -277,7 +341,7 @@ return [
 function lock(flag){
 runtime.busy=!!flag;
 ui.send.disabled=flag;ui.input.disabled=flag;
-[ui.mode,ui.actor,ui.session,ui.newSession,ui.rename,ui.removeSession,ui.sync,ui.clear,ui.comment,ui.memorySave,ui.memorySummary,ui.promptSave,ui.settingsSave,ui.regenerate].forEach(el=>{if(el)el.disabled=flag;});
+[ui.mode,ui.actor,ui.session,ui.newSession,ui.rename,ui.removeSession,ui.sync,ui.clear,ui.comment,ui.memorySave,ui.memorySummary,ui.promptSave,ui.settingsSave,ui.regenerate,ui.cognitionSave,ui.cognitionAnalyze,ui.cognitionReset].forEach(el=>{if(el)el.disabled=flag;});
 }
 async function callGenerator(prompt,maxTokens=1000){
 const reply=await tavo.generate(prompt,{context:false,settings:{maxCompletionTokens:maxTokens}});
@@ -452,6 +516,9 @@ ui.input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preve
 ui.sync.onclick=async()=>{if(runtime.busy)return;status('正在同步主线……');try{await ingest();}catch(e){status('同步失败：'+(e?.message||e));}};
 ui.newSession.onclick=createSession;ui.rename.onclick=renameSession;ui.removeSession.onclick=removeSession;
 ui.regenerate.onclick=regenerate;ui.comment.onclick=manualComment;ui.clear.onclick=clearChat;
+ui.cognitionSave.onclick=saveCognition;
+ui.cognitionReset.onclick=resetCognition;
+ui.cognitionAnalyze.onclick=analyzeCognition;
 ui.memorySave.onclick=async()=>{session().memory=ui.memory.value.trim();await save();renderMemory();status('独立记忆已保存');};
 ui.memorySummary.onclick=()=>summarize(true);
 ui.memoryClear.onclick=async()=>{if(!confirm('清空当前记录的皮下记忆？聊天原文保留，但已归档内容将不再有总结。'))return;session().memory='';session().archivedCount=0;await save();renderMemory();status('皮下记忆已清空');};
