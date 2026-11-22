@@ -26,9 +26,9 @@
 .fw-foot{padding:6px 10px;background:#211c2f;border-top:1px solid #40364d;font-size:10px;color:#9b8eaf}
 </style>
 <div id="fourthwall-chat-root">
-<button id="fw-launch" type="button" aria-label="打开四次元壁">Ⅳ</button>
-<section id="fw-panel" aria-label="四次元壁会客厅" hidden>
-<header class="fw-header"><div class="fw-title"><b>Ⅳ 四次元壁</b><small>皮下语 C · 独立会客厅</small></div><button id="fw-close" class="fw-close" type="button" aria-label="关闭">×</button></header>
+<button id="fw-launch" type="button" aria-label="打开第四面墙">Ⅳ</button>
+<section id="fw-panel" aria-label="第四面墙会客厅" hidden>
+<header class="fw-header"><div class="fw-title"><b>Ⅳ 第四面墙 · 角色直聊</b><small>皮下语 C · 独立会客厅</small></div><button id="fw-close" class="fw-close" type="button" aria-label="关闭">×</button></header>
 <div class="fw-topline">
 <label class="fw-field">扮演人物<select id="fw-actor"></select></label>
 <label class="fw-field">聊天记录<select id="fw-session"></select></label>
@@ -55,7 +55,7 @@
 </div>
 <div class="fw-view" data-page="memory" hidden>
 <div class="fw-inner">
-<p class="fw-help">这里只记录皮下私聊的总结，不修改 Tavo 原本的长期记忆。小白式的“皮下记忆”可以手动编辑，也可以让当前模型总结旧私聊。</p>
+<p class="fw-help">这里只记录皮下私聊的总结，不修改 Tavo 原本的长期记忆。独立的“皮下记忆”可以手动编辑，也可以让当前模型总结旧私聊。</p>
 <label class="fw-label" for="fw-memory">当前人物 · 当前记录的皮下记忆</label>
 <textarea id="fw-memory" style="flex:1;min-height:220px" placeholder="这里可以保存你与语 C 搭档的共同记忆、语气习惯与长期约定……"></textarea>
 <div class="fw-actions"><button id="fw-memory-save" class="fw-primary" type="button">保存记忆</button><button id="fw-memory-summary" type="button">总结旧私聊</button><button id="fw-memory-clear" class="fw-danger" type="button">清空记忆</button></div>
@@ -63,7 +63,7 @@
 </div>
 <div class="fw-view" data-page="prompt" hidden>
 <div class="fw-inner">
-<p class="fw-help">仿照小白的皮下提示词分层：开场、身份协议、收尾。可自由修改，修改只作用于会客厅，不影响 GodOfNovel 和其他预设。</p>
+<p class="fw-help">使用皮下提示词分层：开场、身份协议、收尾。可自由修改，修改只作用于会客厅，不影响 GodOfNovel 和其他预设。</p>
 <label class="fw-label">开场提示词</label><textarea id="fw-prompt-top"></textarea>
 <label class="fw-label">皮下身份协议</label><textarea id="fw-prompt-protocol" style="min-height:185px"></textarea>
 <label class="fw-label">收尾提示词</label><textarea id="fw-prompt-bottom"></textarea>
