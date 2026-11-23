@@ -59,6 +59,73 @@
 .fw-message-admin-line span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
 .fw-message-admin-line button{min-height:36px;border:1px solid #675776;border-radius:7px;background:#4b3a62;padding:5px 9px}
 #fw-message-admin{display:flex;flex-direction:column;gap:7px}
+
+/* v1.5.1: six conversation actions live in two compact rows above the composer */
+#fw-panel .fw-view[data-page="chat"]{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
+#fw-panel .fw-view[data-page="chat"] #fw-log{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#fw-panel .fw-view[data-page="chat"] .fw-chat-tools{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;
+ padding:8px 10px;flex:none;border-top:1px solid #43394f;
+ background:#211b2d;max-height:none;overflow:visible;
+}
+#fw-panel .fw-view[data-page="chat"] .fw-chat-tools button{
+ width:100%;min-width:0;min-height:39px;padding:7px 3px;
+ border-radius:8px;font-size:12px;white-space:nowrap;
+ touch-action:manipulation;
+}
+#fw-panel .fw-view[data-page="chat"] .fw-chat-tools #fw-clear{
+ color:#ffb0bb;border-color:#88475d;background:#362535;
+}
+/* iOS: use a single scroll container instead of nested scrollable flex columns */
+#fw-settings-shell{
+ display:flex;flex-direction:column;flex:1;min-height:0;min-width:0;
+ overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+ overscroll-behavior-y:contain;padding-bottom:max(24px,env(safe-area-inset-bottom,0px));
+}
+#fw-settings-shell>.fw-settings-head{
+ flex:0 0 auto;position:sticky;top:0;z-index:7;min-height:56px;
+ background:#252032;
+}
+#fw-settings-shell>.fw-topline{flex:0 0 auto;padding:9px 11px 11px;gap:8px}
+#fw-settings-shell>.fw-topline .fw-field{gap:5px}
+#fw-settings-shell>.fw-topline select,
+#fw-settings-shell>.fw-topline button{min-height:42px}
+#fw-settings-shell>.fw-nav{
+ flex:0 0 auto;position:sticky;top:56px;z-index:6;
+ background:#211b2c;overflow-x:auto;scrollbar-width:none;min-height:49px;
+}
+#fw-settings-shell>.fw-nav::-webkit-scrollbar{display:none}
+#fw-settings-shell>.fw-nav button{min-height:36px}
+#fw-settings-shell>.fw-view{
+ display:block;flex:0 0 auto;min-height:0;max-height:none;
+ overflow:visible;overscroll-behavior:auto;
+}
+#fw-settings-shell>.fw-view[hidden]{display:none!important}
+#fw-settings-shell>.fw-view .fw-inner{
+ display:flex;flex-direction:column;flex:none;
+ overflow:visible;min-height:0;max-height:none;
+ padding:13px 13px 42px;
+}
+#fw-settings-shell>.fw-view .fw-inner textarea{
+ flex:none!important;min-height:110px;max-height:340px;resize:vertical;
+}
+#fw-settings-shell>.fw-view[data-page="cognition"] textarea{min-height:125px}
+#fw-settings-shell>.fw-view .fw-inner .fw-actions{
+ display:flex;flex-wrap:wrap;gap:8px;flex:0 0 auto;
+}
+#fw-settings-shell>.fw-view .fw-inner .fw-actions button{min-height:41px}
+#fw-settings-shell>.fw-view .fw-inner .fw-setting{gap:8px;flex-wrap:wrap}
+#fw-settings-shell>.fw-view .fw-inner .fw-setting span{
+ flex:1;min-width:140px;line-height:1.5;
+}
+#fw-settings-shell>.fw-view .fw-inner .fw-setting input[type=number]{flex:none;width:80px}
+@media(max-width:375px){
+ #fw-panel .fw-view[data-page="chat"] .fw-chat-tools{gap:5px;padding:7px 8px}
+ #fw-panel .fw-view[data-page="chat"] .fw-chat-tools button{font-size:11px;min-height:38px}
+ #fw-settings-shell>.fw-nav{gap:2px}
+ #fw-settings-shell>.fw-nav button{min-width:60px;padding:7px 5px}
+}
+
 </style>
 
 <div id="fourthwall-chat-root">
@@ -71,6 +138,14 @@
 </header>
 <div id="fw-info" role="status" aria-live="polite" hidden></div>
 <div class="fw-view" data-page="chat"><div id="fw-log"></div>
+<div class="fw-chat-tools">
+<button id="fw-new" type="button">＋新记录</button>
+<button id="fw-rename" type="button">重命名</button>
+<button id="fw-remove-session" type="button">删除记录</button>
+<button id="fw-regenerate" type="button">重新回答</button>
+<button id="fw-comment" type="button">吐槽主线</button>
+<button id="fw-clear" class="fw-danger" type="button">清空聊天</button>
+</div>
 <form id="fw-compose"><textarea id="fw-input" rows="2" maxlength="6000" placeholder="对扮演这位人物的语 C 搭档说话……"></textarea><button id="fw-send" type="submit">发送</button></form>
 </div>
 <div id="fw-settings-shell" hidden>
@@ -89,14 +164,7 @@
 <button data-view="prompt" aria-selected="false">提示词</button>
 <button data-view="messages" aria-selected="false">消息</button>
 </nav>
-<div class="fw-chat-tools">
-<button id="fw-new" type="button">＋新记录</button>
-<button id="fw-rename" type="button">重命名</button>
-<button id="fw-remove-session" type="button">删除记录</button>
-<button id="fw-regenerate" type="button">重新回答</button>
-<button id="fw-comment" type="button">吐槽主线</button>
-<button id="fw-clear" class="fw-danger" type="button">清空聊天</button>
-</div>
+
 
 <div class="fw-view" data-page="cognition" hidden><div class="fw-inner">
 <p class="fw-help">仅对「角色本人」模式生效。角色起初不知道第四面墙和现实玩家的身份，认识会随着你们的交流逐渐形成。</p>
