@@ -126,6 +126,19 @@
  #fw-settings-shell>.fw-nav button{min-width:60px;padding:7px 5px}
 }
 
+
+/* v1.5.2: five actions in the conversation; dangerous chat deletion in Settings */
+#fw-panel .fw-view[data-page="chat"] .fw-chat-tools{grid-template-columns:repeat(6,minmax(0,1fr))}
+#fw-panel .fw-view[data-page="chat"] .fw-chat-tools button{grid-column:span 2}
+#fw-panel .fw-view[data-page="chat"] .fw-chat-tools button:nth-child(n+4){grid-column:span 3}
+.fw-danger-zone{
+ display:flex;flex-direction:column;gap:10px;padding:13px;
+ border:1px solid #824b62;border-radius:12px;
+ background:rgba(135,60,83,.12);margin-top:18px;margin-bottom:20px;flex:0 0 auto;
+}
+.fw-danger-zone strong{font-size:14px;color:#ffb8c6}
+.fw-clear-settings{align-self:flex-start;min-height:45px;padding:10px 16px!important;color:#ffd0d7!important;border:1px solid #aa5972!important;border-radius:10px!important;background:#492d3b!important}
+
 </style>
 
 <div id="fourthwall-chat-root">
@@ -144,7 +157,6 @@
 <button id="fw-remove-session" type="button">删除记录</button>
 <button id="fw-regenerate" type="button">重新回答</button>
 <button id="fw-comment" type="button">吐槽主线</button>
-<button id="fw-clear" class="fw-danger" type="button">清空聊天</button>
 </div>
 <form id="fw-compose"><textarea id="fw-input" rows="2" maxlength="6000" placeholder="对扮演这位人物的语 C 搭档说话……"></textarea><button id="fw-send" type="submit">发送</button></form>
 </div>
@@ -206,6 +218,11 @@
 <label class="fw-setting"><span>允许生成模拟图片 [img:]（使用当前生图 API）</span><input id="fw-images" type="checkbox"></label>
 <label class="fw-setting"><span>允许语音 [voice:]（使用当前 TTS 绑定）</span><input id="fw-voice" type="checkbox"></label>
 <div class="fw-actions"><button id="fw-settings-save" class="fw-primary" type="button">保存设置</button><button id="fw-export" type="button">导出当前记录</button></div>
+<div class="fw-danger-zone">
+<strong>危险操作</strong>
+<p class="fw-help">仅清空当前人物、当前模式、当前记录中的聊天消息。主线不会受影响，独立记忆默认保留。操作需要二次确认。</p>
+<button id="fw-clear" class="fw-danger fw-clear-settings" type="button">清空当前聊天</button>
+</div>
 <p class="fw-help">TavoJS 目前不提供真正的流式 token 回调，回复会在请求完成后整体显示。自动吐槽和自动总结默认关闭，以避免产生额外 API 费用。</p>
 </div></div>
 
