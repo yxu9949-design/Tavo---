@@ -5,7 +5,7 @@
   "name": {
     "$t": "plugin.name"
   },
-  "version": "1.5.1",
+  "version": "1.5.2",
   "author": "yxu9949-design",
   "description": {
     "$t": "plugin.description"
@@ -34,7 +34,7 @@
     ]
   },
   "releaseNotes": {
-    "$t": "releaseNotes.1_5_1"
+    "$t": "releaseNotes.1_5_2"
   },
   "localization": {
     "defaultLocale": "zh-CN",
