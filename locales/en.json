@@ -39,5 +39,6 @@
   "releaseNotes.1_3_1": "Restore the original Fourth Wall · Direct Character Chat name across the interface and installation description. Keep all backstage roleplay and character-selection functionality unchanged.",
   "releaseNotes.1_4_0": "Add two distinct modes: in-character Fourth Wall chat and backstage roleplay partner. Per-character/per-mode isolated sessions, memories and prompts; preserves prior backstage history.",
   "releaseNotes.1_4_1": "Improve mobile usability: move the close control from the crowded top-right corner to a large left-aligned header button, add a secondary Close Window button in the fixed footer, and retain all dual-mode chat features.",
-  "releaseNotes.1_5_0": "Minimal chat UI with only close, settings, messages, and composer. All controls moved into Settings. Character mode starts unaware of the fourth wall; cognition may be analyzed or manually edited. Existing chats preserved."
+  "releaseNotes.1_5_0": "Minimal chat UI with only close, settings, messages, and composer. All controls moved into Settings. Character mode starts unaware of the fourth wall; cognition may be analyzed or manually edited. Existing chats preserved.",
+  "releaseNotes.1_5_1": "Move six session and chat actions back into the conversation in a compact 3x2 grid. Make iPhone Settings a single, vertically scrollable pane with sticky navigation so long cognitive, memory, and prompt settings are fully reachable."
 }
