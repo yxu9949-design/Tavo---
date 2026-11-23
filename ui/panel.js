@@ -385,6 +385,13 @@ const v=prompt('修改私聊内容：',m.content);
 if(v===null||!v.trim())return;
 m.content=v.trim();await save();render();status('已修改私聊消息');
 }
+
+function requireTypedConfirmation(message,keyword){
+ if(!confirm(message+'\n\n请确认操作对象正确。点击“确定”后仍需输入校验文字。'))return false;
+ const typed=prompt('二次确认：请输入「'+keyword+'」才能执行。\n留空、输入错误或取消均不会删除。','');
+ return typed!==null && typed.trim()===keyword;
+}
+
 async function deleteMessage(i){
 if(runtime.busy)return;const s=session(),m=s.history[i];if(!m)return;
 const warning=i<s.archivedCount?'这条消息已经总结进皮下记忆，删除原文不会自动清除记忆。\n':'';
@@ -393,8 +400,13 @@ s.history.splice(i,1);if(i<s.archivedCount)s.archivedCount=Math.max(0,s.archived
 await save();render();status('已删除私聊消息，未改动主线');
 }
 async function clearChat(){
-if(runtime.busy||!confirm('清空当前人物当前记录的全部私聊消息？默认保留皮下记忆，主线剧情完全不变。'))return;
-const s=session();s.history=[];s.archivedCount=0;await save();render();status('已清空当前私聊记录，皮下记忆保留');
+if(runtime.busy)return;
+const s=session();
+if(!s.history.length){status('当前聊天记录已经是空的');return;}
+const message='准备清空【'+actorName()+' / '+modeLabel()+' / '+s.name+'】的全部 '+s.history.length+' 条独立聊天消息。\n主线不会改变，独立记忆保留。聊天原文清空后不能撤销。';
+if(!requireTypedConfirmation(message,'清空聊天')){status('已取消清空聊天');return;}
+s.history=[];s.archivedCount=0;
+await save();render();status('已清空当前聊天；主线及独立记忆未修改');
 }
 function renderMemory(){
 const s=session();ui.memory.value=s.memory;
@@ -481,10 +493,13 @@ async function renameSession(){
 const s=session(),name=prompt('重命名记录：',s.name);if(!name?.trim())return;s.name=name.trim().slice(0,80);await save();redrawSessions();
 }
 async function removeSession(){
+if(runtime.busy)return;
 const a=actor(),s=session();
-if(a.sessions.length<2){status('至少保留一份会客厅记录，可选择清空消息');return;}
-if(!confirm('删除记录“'+s.name+'”及其皮下记忆？不可撤销。'))return;
-a.sessions=a.sessions.filter(x=>x.id!==s.id);a.active=a.sessions[0].id;await save();redrawSessions();
+if(a.sessions.length<2){status('至少保留一份聊天记录，不能删除最后一份；可以在设置中清空消息');return;}
+const detail='准备永久删除【'+actorName()+' / '+modeLabel()+' / '+s.name+'】。\n本操作会同时删除这份记录的 '+s.history.length+' 条消息与独立记忆，无法撤销。不会修改主线或其他记录。';
+if(!requireTypedConfirmation(detail,'删除记录')){status('已取消删除记录');return;}
+a.sessions=a.sessions.filter(x=>x.id!==s.id);
+a.active=a.sessions[0].id;await save();redrawSessions();status('已删除指定记录，其他记录未受影响');
 }
 async function poll(){
 if(!runtime.data.config.live||ui.panel.hidden||runtime.busy)return;
@@ -524,7 +539,14 @@ ui.cognitionReset.onclick=resetCognition;
 ui.cognitionAnalyze.onclick=analyzeCognition;
 ui.memorySave.onclick=async()=>{session().memory=ui.memory.value.trim();await save();renderMemory();status('独立记忆已保存');};
 ui.memorySummary.onclick=()=>summarize(true);
-ui.memoryClear.onclick=async()=>{if(!confirm('清空当前记录的皮下记忆？聊天原文保留，但已归档内容将不再有总结。'))return;session().memory='';session().archivedCount=0;await save();renderMemory();status('皮下记忆已清空');};
+ui.memoryClear.onclick=async()=>{
+if(runtime.busy)return;
+const s=session();
+if(!s.memory){status('当前记录没有可清空的独立记忆');return;}
+const detail='准备清空【'+actorName()+' / '+modeLabel()+' / '+s.name+'】的独立记忆。\n私聊原文与主线保留，但独立记忆删除后无法撤销。';
+if(!requireTypedConfirmation(detail,'清空记忆')){status('已取消清空记忆');return;}
+s.memory='';s.archivedCount=0;await save();renderMemory();status('独立记忆已清空，私聊和主线未受影响');
+};
 ui.promptSave.onclick=savePrompt;ui.promptReset.onclick=resetPrompt;
 ui.settingsSave.onclick=saveSettings;ui.export.onclick=exportCurrent;
 (async()=>{
